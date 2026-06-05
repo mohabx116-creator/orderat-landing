@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+*.local
+*.log
+orderat-*.png
+orderat.har
+stitch_orderat_logistics_landing_page.zip
