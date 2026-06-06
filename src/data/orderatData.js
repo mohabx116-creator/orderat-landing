@@ -23,6 +23,9 @@ export const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURICom
   whatsappMessage,
 )}`;
 
+export const whatsappGroupLink =
+  'https://chat.whatsapp.com/G0d5SMOIjQ20vvP9pVo1yF?s=cl&p=i&mlu=0&ilr=4';
+
 export const activeRoutes = [
   {
     name: 'القاهرة',

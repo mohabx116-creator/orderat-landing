@@ -1,4 +1,4 @@
-import { whatsappLink } from '../data/orderatData.js';
+import { whatsappGroupLink, whatsappLink } from '../data/orderatData.js';
 
 const trustChips = [
   { icon: '💬', label: 'حجز عبر واتساب' },
@@ -27,10 +27,19 @@ function Hero() {
             >
               📦 احجز مكان على واتساب
             </a>
+            <a
+              className="btn btn-group"
+              href={whatsappGroupLink}
+              target="_blank"
+              rel="noreferrer"
+            >
+              انضم لجروب الرحلات
+            </a>
             <a className="btn btn-secondary" href="#pricing">
               تعرف على الأسعار
             </a>
           </div>
+          <p className="cta-helper">تابع مواعيد الرحلات، السعة المتاحة، وآخر التحديثات.</p>
           <p className="disclaimer">
             السعر النهائي يُحدد بعد مراجعة الوزن والمساحة ونوع الشحنة — بدون
             رسوم مخفية.
