@@ -1,4 +1,4 @@
-import { operatingDays, launchNotice } from '../data/orderatData.js';
+import { operatingDays, launchNotice, whatsappGroupLink } from '../data/orderatData.js';
 
 function ScheduleSection() {
   return (
@@ -20,6 +20,25 @@ function ScheduleSection() {
               <span>{item.label}</span>
             </article>
           ))}
+        </div>
+      </div>
+
+      <div className="container group-notice-wrapper">
+        <div className="group-notice-card">
+          <div className="group-notice-content">
+            <h3 className="group-notice-title">جروب تحديثات الرحلات</h3>
+            <p className="group-notice-text">
+              بنعلن على الجروب مواعيد الرحلات، هل الرحلة مؤكدة، والسعة المتاحة قبل كل رحلة.
+            </p>
+          </div>
+          <a
+            className="btn btn-group btn-small"
+            href={whatsappGroupLink}
+            target="_blank"
+            rel="noreferrer"
+          >
+            انضم لجروب الرحلات
+          </a>
         </div>
       </div>
     </section>

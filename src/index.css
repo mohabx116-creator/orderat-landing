@@ -528,6 +528,46 @@ h3 {
   font-size: 0.9rem;
 }
 
+/* ─── Group Notice Card ───────────────────────────────── */
+
+.group-notice-wrapper {
+  margin-top: 40px;
+}
+
+.group-notice-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 32px;
+  background: var(--surface-strong);
+  border: 1px solid rgba(17, 61, 53, 0.12);
+  border-inline-start: 4px solid var(--accent);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(17, 61, 53, 0.05);
+}
+
+.group-notice-content {
+  flex: 1;
+}
+
+.group-notice-title {
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  color: var(--brand-strong);
+}
+
+.group-notice-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.group-notice-card .btn {
+  flex-shrink: 0;
+}
+
 /* ─── Launch Notice ───────────────────────────────────── */
 
 .launch-notice {
@@ -924,5 +964,18 @@ h3 {
 
   body {
     padding-bottom: 110px;
+  }
+
+  .group-notice-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 16px;
+    border-inline-start: 1px solid rgba(17, 61, 53, 0.12);
+    border-top: 4px solid var(--accent);
+  }
+
+  .group-notice-card .btn {
+    width: 100%;
   }
 }
