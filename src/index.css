@@ -54,7 +54,7 @@ body::before {
   background-repeat: no-repeat;
   background-position: center 48%;
   background-size: min(72vw, 920px) auto;
-  opacity: 0.035;
+  opacity: 0.085;
 }
 
 #root {
@@ -786,7 +786,7 @@ h3 {
   body::before {
     background-position: center 42%;
     background-size: 140vw auto;
-    opacity: 0.028;
+    opacity: 0.065;
   }
 
   .container {
