@@ -36,11 +36,30 @@ html {
 }
 
 body {
+  position: relative;
   margin: 0;
   min-width: 320px;
   background:
     linear-gradient(180deg, rgba(255, 251, 244, 0.94), rgba(245, 239, 228, 0.98)),
     var(--bg);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("/assets/brand-watermark.png");
+  background-repeat: no-repeat;
+  background-position: center 48%;
+  background-size: min(72vw, 920px) auto;
+  opacity: 0.035;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
 }
 
 a {
@@ -764,6 +783,12 @@ h3 {
 /* ─── Responsive: 600px ───────────────────────────────── */
 
 @media (max-width: 600px) {
+  body::before {
+    background-position: center 42%;
+    background-size: 140vw auto;
+    opacity: 0.028;
+  }
+
   .container {
     width: min(100% - 24px, 1120px);
   }
