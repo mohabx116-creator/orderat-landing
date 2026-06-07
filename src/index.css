@@ -46,15 +46,22 @@ body {
 
 body::before {
   content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+  display: none;
   pointer-events: none;
-  background-image: url("/assets/brand-watermark.png");
-  background-repeat: no-repeat;
-  background-position: center 48%;
-  background-size: min(72vw, 920px) auto;
-  opacity: 0.085;
+}
+
+@media (min-width: 821px) {
+  body::before {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image: url("/assets/brand-watermark.jpg");
+    background-repeat: no-repeat;
+    background-position: center 48%;
+    background-size: min(72vw, 920px) auto;
+    opacity: 0.085;
+  }
 }
 
 #root {
@@ -818,11 +825,23 @@ h3 {
   }
 
   .hero {
-    padding-top: 48px;
+    padding-top: 34px;
   }
 
   .hero-visual {
     display: none;
+  }
+
+  .hero::before {
+    background:
+      linear-gradient(135deg, rgba(17, 61, 53, 0.05), transparent 42%),
+      linear-gradient(315deg, rgba(196, 111, 58, 0.07), transparent 46%);
+  }
+
+  .site-header,
+  .mobile-cta-bar,
+  .trust-chip {
+    backdrop-filter: none;
   }
 
   .routes-grid,
@@ -847,7 +866,6 @@ h3 {
     padding: 12px 16px;
     background: rgba(255, 251, 244, 0.97);
     border-top: 1px solid rgba(17, 61, 53, 0.12);
-    backdrop-filter: blur(14px);
     box-shadow: 0 -4px 24px rgba(17, 61, 53, 0.1);
   }
 
@@ -874,12 +892,6 @@ h3 {
 /* ─── Responsive: 600px ───────────────────────────────── */
 
 @media (max-width: 600px) {
-  body::before {
-    background-position: center 42%;
-    background-size: 140vw auto;
-    opacity: 0.065;
-  }
-
   .container {
     width: min(100% - 24px, 1120px);
   }
