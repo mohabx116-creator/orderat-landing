@@ -7,6 +7,7 @@ import PricingSection from './components/PricingSection.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
 import OrderIntakeDialog from './components/OrderIntakeDialog.jsx';
 import ShipmentRules from './components/ShipmentRules.jsx';
+import FAQSection from './components/FAQSection.jsx';
 import FinalCTA from './components/FinalCTA.jsx';
 import Footer from './components/Footer.jsx';
 import { whatsappLink } from './data/orderatData.js';
@@ -21,11 +22,13 @@ function App() {
         <Hero onOpenOrderDialog={() => setIsOrderDialogOpen(true)} />
         <RoutesSection />
         <ScheduleSection />
-        <PricingSection />
+        <PricingSection onOpenOrderDialog={() => setIsOrderDialogOpen(true)} />
         <HowItWorks />
         <ShipmentRules />
+        <FAQSection />
         <FinalCTA />
       </main>
+
       <Footer />
 
       <OrderIntakeDialog
