@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { createOrder } from '../lib/ordersApi';
-import { whatsappLink } from '../data/orderatData';
+import { whatsappLink, whatsappNumber } from '../data/orderatData';
 
-function OrderIntakeForm() {
+function OrderIntakeForm({ onOpenTracking }) {
   const initialFormState = {
     customerName: '',
     phone: '',
@@ -22,6 +22,16 @@ function OrderIntakeForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [submittedPhone, setSubmittedPhone] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (success?.orderCode) {
+      navigator.clipboard.writeText(success.orderCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -88,6 +98,7 @@ function OrderIntakeForm() {
         orderCode: response.order.orderCode,
         message: response.message,
       });
+      setSubmittedPhone(formData.phone);
       setFormData(initialFormState);
     } catch (err) {
       setError(err.message || 'تعذر تسجيل الطلب حاليًا. جرّب مرة أخرى أو تواصل معنا عبر واتساب.');
@@ -99,26 +110,67 @@ function OrderIntakeForm() {
   return (
     <div className="form-content-wrap">
           {success ? (
-            <div className="alert alert-success text-center">
-              <h3>تم تسجيل طلبك بنجاح 🎉</h3>
-              <p className="order-code-display">رقم الطلب: <strong>{success.orderCode}</strong></p>
-              <p>سنراجع السعر والمساحة المتاحة ونرد عليك على واتساب.</p>
+            <div className="alert alert-success text-center" style={{ direction: 'rtl', padding: '24px 20px', borderRadius: '12px' }}>
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '12px', color: 'var(--brand-strong)' }}>تم تسجيل طلبك بنجاح</h3>
               
-              <div className="success-actions">
+              <div style={{
+                background: 'rgba(17, 61, 53, 0.08)',
+                border: '1px solid rgba(17, 61, 53, 0.15)',
+                borderRadius: '8px',
+                padding: '16px',
+                margin: '20px 0',
+                textAlign: 'center'
+              }}>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--ink)' }}>احتفظ برقم الطلب لاستخدامه في المتابعة والتتبع:</p>
+                <div style={{ fontSize: '1.6rem', fontWeight: 'bold', color: 'var(--brand)', margin: '8px 0', letterSpacing: '0.5px' }}>
+                  {success.orderCode}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="btn btn-secondary btn-small"
+                  style={{ minHeight: '36px', padding: '6px 16px', fontSize: '0.85rem', marginTop: '4px' }}
+                >
+                  {copied ? 'تم نسخ رقم الطلب! ✓' : 'نسخ رقم الطلب 📋'}
+                </button>
+              </div>
+
+              <p style={{ fontSize: '0.92rem', lineHeight: '1.6', color: 'var(--ink)', margin: '16px 0 24px 0' }}>
+                سنراجع بيانات الشحنة ونتواصل معك لتأكيد السعر وأقرب رحلة مناسبة.
+              </p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '340px', margin: '0 auto' }}>
                 <a
                   className="btn btn-whatsapp"
-                  href={whatsappLink}
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                    `مرحبًا، سجلت طلب شحن على أوردرات ورقم الطلب هو ${success.orderCode}. أريد متابعة تأكيد السعر وأقرب رحلة مناسبة.`
+                  )}`}
                   target="_blank"
                   rel="noreferrer"
+                  style={{ width: '100%', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  تواصل عبر واتساب لتأكيد الطلب
+                  متابعة عبر واتساب 💬
                 </a>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => onOpenTracking && onOpenTracking({ orderCode: success.orderCode, phone: submittedPhone })}
+                  style={{ width: '100%', minHeight: '44px', background: 'var(--brand-strong)', border: 'none', color: '#fff', cursor: 'pointer' }}
+                >
+                  تتبع الطلب الآن 🔍
+                </button>
+
                 <button
                   type="button"
                   className="btn btn-secondary"
-                  onClick={() => setSuccess(null)}
+                  onClick={() => {
+                    setSuccess(null);
+                    setSubmittedPhone('');
+                  }}
+                  style={{ width: '100%', minHeight: '44px', marginTop: '8px' }}
                 >
-                  تسجيل شحنة جديدة
+                  تسجيل شحنة جديدة 📦
                 </button>
               </div>
             </div>

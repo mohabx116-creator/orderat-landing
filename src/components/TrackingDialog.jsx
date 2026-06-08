@@ -31,7 +31,7 @@ const STATUS_TEXT_COLOR = {
   CANCELLED: 'var(--danger)'
 };
 
-function TrackingDialog({ isOpen, onClose }) {
+function TrackingDialog({ isOpen, onClose, prefill }) {
   const [orderCode, setOrderCode] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
@@ -63,15 +63,15 @@ function TrackingDialog({ isOpen, onClose }) {
     };
   }, [isOpen, onClose]);
 
-  // Reset states on dialog close/open
+  // Reset or prefill states on dialog close/open
   useEffect(() => {
     if (isOpen) {
-      setOrderCode('');
-      setPhone('');
+      setOrderCode(prefill?.orderCode || '');
+      setPhone(prefill?.phone || '');
       setError('');
       setOrder(null);
     }
-  }, [isOpen]);
+  }, [isOpen, prefill]);
 
   if (!isOpen) return null;
 

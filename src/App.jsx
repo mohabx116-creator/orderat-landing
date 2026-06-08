@@ -16,6 +16,12 @@ function App() {
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
   const [isFAQPopupOpen, setIsFAQPopupOpen] = useState(false);
   const [isTrackingDialogOpen, setIsTrackingDialogOpen] = useState(false);
+  const [trackingPrefill, setTrackingPrefill] = useState({ orderCode: '', phone: '' });
+
+  const handleOpenTracking = (prefill) => {
+    setTrackingPrefill(prefill || { orderCode: '', phone: '' });
+    setIsTrackingDialogOpen(true);
+  };
 
   return (
     <>
@@ -34,6 +40,7 @@ function App() {
       <OrderIntakeDialog
         isOpen={isOrderDialogOpen}
         onClose={() => setIsOrderDialogOpen(false)}
+        onOpenTracking={handleOpenTracking}
       />
 
       <FAQPopup
@@ -44,6 +51,7 @@ function App() {
       <TrackingDialog
         isOpen={isTrackingDialogOpen}
         onClose={() => setIsTrackingDialogOpen(false)}
+        prefill={trackingPrefill}
       />
 
       {/* Sticky FAQ Hint Button */}
@@ -57,7 +65,7 @@ function App() {
 
       {/* Sticky Track Hint Button */}
       <button
-        onClick={() => setIsTrackingDialogOpen(true)}
+        onClick={() => handleOpenTracking({ orderCode: '', phone: '' })}
         className="sticky-track-btn"
         type="button"
       >

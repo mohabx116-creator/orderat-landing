@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import OrderIntakeForm from './OrderIntakeForm';
 
-function OrderIntakeDialog({ isOpen, onClose }) {
+function OrderIntakeDialog({ isOpen, onClose, onOpenTracking }) {
   // Lock body scroll when dialog is open
   useEffect(() => {
     if (isOpen) {
@@ -61,7 +61,14 @@ function OrderIntakeDialog({ isOpen, onClose }) {
         </div>
 
         <div className="dialog-body">
-          <OrderIntakeForm />
+          <OrderIntakeForm
+            onOpenTracking={(prefill) => {
+              onClose();
+              if (onOpenTracking) {
+                onOpenTracking(prefill);
+              }
+            }}
+          />
         </div>
 
         <div className="dialog-footer">
