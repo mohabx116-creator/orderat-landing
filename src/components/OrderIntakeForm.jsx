@@ -97,17 +97,7 @@ function OrderIntakeForm() {
   };
 
   return (
-    <section className="section intake-section" id="intake-form-section" aria-labelledby="intake-title">
-      <div className="container">
-        <div className="section-heading">
-          <p className="eyebrow">تسجيل سريع</p>
-          <h2 id="intake-title">سجّل بيانات الشحنة</h2>
-          <p className="section-subtitle">
-            لو حابب تختصر المحادثة، سجّل بيانات الشحنة هنا وسنراجعها قبل تأكيد السعر.
-          </p>
-        </div>
-
-        <div className="form-card">
+    <div className="form-content-wrap">
           {success ? (
             <div className="alert alert-success text-center">
               <h3>تم تسجيل طلبك بنجاح 🎉</h3>
@@ -349,9 +339,7 @@ function OrderIntakeForm() {
               </div>
             </form>
           )}
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }
 

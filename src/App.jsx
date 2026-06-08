@@ -1,30 +1,37 @@
+import { useState } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
 import RoutesSection from './components/RoutesSection.jsx';
 import ScheduleSection from './components/ScheduleSection.jsx';
 import PricingSection from './components/PricingSection.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
-import OrderIntakeForm from './components/OrderIntakeForm.jsx';
+import OrderIntakeDialog from './components/OrderIntakeDialog.jsx';
 import ShipmentRules from './components/ShipmentRules.jsx';
 import FinalCTA from './components/FinalCTA.jsx';
 import Footer from './components/Footer.jsx';
 import { whatsappLink } from './data/orderatData.js';
 
 function App() {
+  const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
+
   return (
     <>
       <Navbar />
       <main>
-        <Hero />
+        <Hero onOpenOrderDialog={() => setIsOrderDialogOpen(true)} />
         <RoutesSection />
         <ScheduleSection />
         <PricingSection />
         <HowItWorks />
-        <OrderIntakeForm />
         <ShipmentRules />
         <FinalCTA />
       </main>
       <Footer />
+
+      <OrderIntakeDialog
+        isOpen={isOrderDialogOpen}
+        onClose={() => setIsOrderDialogOpen(false)}
+      />
 
       {/* Mobile-only sticky WhatsApp CTA bar */}
       <div className="mobile-cta-bar" aria-label="حجز سريع عبر واتساب">

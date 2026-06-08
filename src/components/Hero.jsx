@@ -6,7 +6,7 @@ const trustChips = [
   { icon: '🗓️', label: 'رحلة مجدولة' },
 ];
 
-function Hero() {
+function Hero({ onOpenOrderDialog }) {
   return (
     <section className="hero section" id="top">
       <div className="container hero-grid">
@@ -27,6 +27,13 @@ function Hero() {
             >
               📦 احجز مكان على واتساب
             </a>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onOpenOrderDialog}
+            >
+              📝 سجّل بيانات الشحنة
+            </button>
             <a
               className="btn btn-group"
               href={whatsappGroupLink}
@@ -34,9 +41,6 @@ function Hero() {
               rel="noreferrer"
             >
               انضم لجروب الرحلات
-            </a>
-            <a className="btn btn-secondary" href="#pricing">
-              تعرف على الأسعار
             </a>
           </div>
           <p className="cta-helper">تابع مواعيد الرحلات، السعة المتاحة، وآخر التحديثات.</p>
