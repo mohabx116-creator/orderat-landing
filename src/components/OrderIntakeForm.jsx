@@ -14,7 +14,7 @@ function OrderIntakeForm({ onOpenTracking }) {
     estimatedWeight: '',
     isFragile: false,
     needsSpecialLoading: false,
-    requestedTripDay: 'أقرب رحلة متاحة',
+    requestedTripDay: 'أقرب رحلة مناسبة',
     notes: '',
   };
 
@@ -24,6 +24,20 @@ function OrderIntakeForm({ onOpenTracking }) {
   const [success, setSuccess] = useState(null);
   const [submittedPhone, setSubmittedPhone] = useState('');
   const [copied, setCopied] = useState(false);
+
+  // Custom free-text inputs for "Other" selections
+  const [customPickupArea, setCustomPickupArea] = useState('');
+  const [customDeliveryArea, setCustomDeliveryArea] = useState('');
+  const [customShipmentType, setCustomShipmentType] = useState('');
+
+  const shipmentTypes = [
+    'كرتونة',
+    'شنطة',
+    'جهاز / إلكترونيات',
+    'أوراق / مستندات',
+    'منتج قابل للكسر',
+    'أخرى'
+  ];
 
   const handleCopy = () => {
     if (success?.orderCode) {
@@ -63,22 +77,42 @@ function OrderIntakeForm({ onOpenTracking }) {
       return;
     }
     if (!formData.pickupArea) {
-      setError('منطقة الاستلام مطلوبة.');
+      setError('يرجى اختيار منطقة الاستلام.');
+      return;
+    }
+    if (formData.pickupArea === 'أخرى' && !customPickupArea.trim()) {
+      setError('يرجى كتابة منطقة الاستلام.');
       return;
     }
     if (!formData.deliveryArea) {
-      setError('منطقة التسليم مطلوبة.');
+      setError('يرجى اختيار منطقة التسليم.');
+      return;
+    }
+    if (formData.deliveryArea === 'أخرى' && !customDeliveryArea.trim()) {
+      setError('يرجى كتابة منطقة التسليم.');
       return;
     }
     if (!formData.shipmentType) {
-      setError('نوع الشحنة مطلوب.');
+      setError('يرجى اختيار نوع الشحنة.');
+      return;
+    }
+    if (formData.shipmentType === 'أخرى' && !customShipmentType.trim()) {
+      setError('يرجى كتابة تفاصيل نوع الشحنة.');
       return;
     }
 
     const pieces = Number(formData.piecesCount);
     if (!Number.isInteger(pieces) || pieces <= 0) {
-      setError('عدد القطع يجب أن يكون عددًا صحيحًا أكبر من الصفر.');
+      setError('عدد القطع يجب أن يكون رقمًا صحيحًا أكبر من الصفر.');
       return;
+    }
+
+    if (formData.estimatedWeight.trim()) {
+      const weightVal = parseFloat(formData.estimatedWeight);
+      if (isNaN(weightVal) || weightVal <= 0) {
+        setError('الوزن التقديري يجب أن يكون رقمًا موجبًا إن تم إدخاله.');
+        return;
+      }
     }
 
     setLoading(true);
@@ -86,8 +120,10 @@ function OrderIntakeForm({ onOpenTracking }) {
     try {
       const payload = {
         ...formData,
+        pickupArea: formData.pickupArea === 'أخرى' ? customPickupArea.trim() : formData.pickupArea,
+        deliveryArea: formData.deliveryArea === 'أخرى' ? customDeliveryArea.trim() : formData.deliveryArea,
+        shipmentType: formData.shipmentType === 'أخرى' ? customShipmentType.trim() : formData.shipmentType,
         piecesCount: pieces,
-        // Make sure boolean fields are passed correctly
         isFragile: formData.isFragile === true || formData.isFragile === 'true',
         needsSpecialLoading: formData.needsSpecialLoading === true || formData.needsSpecialLoading === 'true',
       };
@@ -98,8 +134,11 @@ function OrderIntakeForm({ onOpenTracking }) {
         orderCode: response.order.orderCode,
         message: response.message,
       });
-      setSubmittedPhone(formData.phone);
+      setSubmittedPhone(payload.phone);
       setFormData(initialFormState);
+      setCustomPickupArea('');
+      setCustomDeliveryArea('');
+      setCustomShipmentType('');
     } catch (err) {
       setError(err.message || 'تعذر تسجيل الطلب حاليًا. جرّب مرة أخرى أو تواصل معنا عبر واتساب.');
     } finally {
@@ -175,216 +214,294 @@ function OrderIntakeForm({ onOpenTracking }) {
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate>
+            <form onSubmit={handleSubmit} noValidate style={{ direction: 'rtl', textAlign: 'right' }}>
               {error && (
-                <div className="alert alert-error" role="alert">
-                  <p>{error}</p>
+                <div className="alert alert-error" role="alert" style={{ marginBottom: '20px', padding: '12px 16px', fontSize: '0.9rem' }}>
+                  ⚠️ {error}
                 </div>
               )}
 
-              <div className="form-grid">
-                {/* الاسم */}
-                <div className="form-group">
-                  <label htmlFor="customerName">الاسم بالكامل <span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="customerName"
-                    name="customerName"
-                    value={formData.customerName}
-                    onChange={handleChange}
-                    placeholder="مثال: أحمد محمد"
-                    required
-                  />
-                </div>
-
-                {/* الهاتف */}
-                <div className="form-group">
-                  <label htmlFor="phone">رقم الهاتف / واتساب <span className="required">*</span></label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="مثال: 01xxxxxxxxx"
-                    required
-                  />
-                </div>
-
-                {/* منطقة الاستلام */}
-                <div className="form-group">
-                  <label htmlFor="pickupArea">منطقة الاستلام <span className="required">*</span></label>
-                  <select
-                    id="pickupArea"
-                    name="pickupArea"
-                    value={formData.pickupArea}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">-- اختر منطقة الاستلام --</option>
-                    <option value="القاهرة">القاهرة</option>
-                    <option value="العبور">العبور</option>
-                    <option value="العاشر من رمضان">العاشر من رمضان</option>
-                  </select>
-                </div>
-
-                {/* منطقة التسليم */}
-                <div className="form-group">
-                  <label htmlFor="deliveryArea">منطقة التسليم <span className="required">*</span></label>
-                  <select
-                    id="deliveryArea"
-                    name="deliveryArea"
-                    value={formData.deliveryArea}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">-- اختر منطقة التسليم --</option>
-                    <option value="القاهرة">القاهرة</option>
-                    <option value="العبور">العبور</option>
-                    <option value="العاشر من رمضان">العاشر من رمضان</option>
-                  </select>
-                </div>
-
-                {/* نوع الشحنة */}
-                <div className="form-group">
-                  <label htmlFor="shipmentType">نوع الشحنة <span className="required">*</span></label>
-                  <select
-                    id="shipmentType"
-                    name="shipmentType"
-                    value={formData.shipmentType}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">-- اختر نوع الشحنة --</option>
-                    <option value="مستندات">مستندات</option>
-                    <option value="منتجات أونلاين">منتجات أونلاين</option>
-                    <option value="عينة / Samples">عينة / Samples</option>
-                    <option value="قطع غيار صغيرة">قطع غيار صغيرة</option>
-                    <option value="كرتونة صغيرة">كرتونة صغيرة</option>
-                    <option value="كرتونة متوسطة">كرتونة متوسطة</option>
-                    <option value="شحنة كبيرة الحجم وخفيفة">شحنة كبيرة الحجم وخفيفة</option>
-                    <option value="شحنة ثقيلة">شحنة ثقيلة</option>
-                    <option value="أخرى">أخرى</option>
-                  </select>
-                </div>
-
-                {/* عدد القطع */}
-                <div className="form-group">
-                  <label htmlFor="piecesCount">عدد القطع <span className="required">*</span></label>
-                  <input
-                    type="number"
-                    id="piecesCount"
-                    name="piecesCount"
-                    value={formData.piecesCount}
-                    onChange={handleChange}
-                    min="1"
-                    required
-                  />
-                </div>
-
-                {/* الأبعاد */}
-                <div className="form-group">
-                  <label htmlFor="dimensions">الأبعاد التقريبية (سم)</label>
-                  <input
-                    type="text"
-                    id="dimensions"
-                    name="dimensions"
-                    value={formData.dimensions}
-                    onChange={handleChange}
-                    placeholder="مثال: 50 × 30 × 20 سم"
-                  />
-                </div>
-
-                {/* الوزن */}
-                <div className="form-group">
-                  <label htmlFor="estimatedWeight">الوزن التقريبي</label>
-                  <input
-                    type="text"
-                    id="estimatedWeight"
-                    name="estimatedWeight"
-                    value={formData.estimatedWeight}
-                    onChange={handleChange}
-                    placeholder="مثال: 5 كيلو"
-                  />
-                </div>
-
-                {/* اليوم المطلوب للرحلة */}
-                <div className="form-group">
-                  <label htmlFor="requestedTripDay">اليوم المطلوب للرحلة</label>
-                  <select
-                    id="requestedTripDay"
-                    name="requestedTripDay"
-                    value={formData.requestedTripDay}
-                    onChange={handleChange}
-                  >
-                    <option value="أقرب رحلة متاحة">أقرب رحلة متاحة</option>
-                    <option value="الأحد">الأحد</option>
-                    <option value="الثلاثاء">الثلاثاء</option>
-                    <option value="الخميس">الخميس</option>
-                  </select>
-                </div>
-
-                {/* هل قابلة للكسر؟ */}
-                <div className="form-group">
-                  <label>هل الشحنة قابلة للكسر؟</label>
-                  <div className="toggle-options">
-                    <button
-                      type="button"
-                      className={`btn-toggle ${formData.isFragile === true ? 'active' : ''}`}
-                      onClick={() => handleSelectBoolean('isFragile', true)}
-                    >
-                      نعم
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn-toggle ${formData.isFragile === false ? 'active' : ''}`}
-                      onClick={() => handleSelectBoolean('isFragile', false)}
-                    >
-                      لا
-                    </button>
+              {/* 1. بيانات العميل */}
+              <div style={{ background: 'var(--surface-strong)', border: '1px solid var(--line)', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
+                <h4 style={{ color: 'var(--brand-strong)', margin: '0 0 16px 0', fontSize: '1rem', fontWeight: 'bold', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  👤 بيانات العميل
+                </h4>
+                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                  {/* الاسم */}
+                  <div className="form-group">
+                    <label htmlFor="customerName" style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '6px' }}>الاسم بالكامل <span className="required" style={{ color: 'var(--danger)' }}>*</span></label>
+                    <input
+                      type="text"
+                      id="customerName"
+                      name="customerName"
+                      value={formData.customerName}
+                      onChange={handleChange}
+                      placeholder="مثال: أحمد محمد"
+                      required
+                    />
                   </div>
-                </div>
 
-                {/* هل تحتاج تحميل خاص؟ */}
-                <div className="form-group">
-                  <label>هل تحتاج تحميل/تنزيل خاص؟</label>
-                  <div className="toggle-options">
-                    <button
-                      type="button"
-                      className={`btn-toggle ${formData.needsSpecialLoading === true ? 'active' : ''}`}
-                      onClick={() => handleSelectBoolean('needsSpecialLoading', true)}
-                    >
-                      نعم
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn-toggle ${formData.needsSpecialLoading === false ? 'active' : ''}`}
-                      onClick={() => handleSelectBoolean('needsSpecialLoading', false)}
-                    >
-                      لا
-                    </button>
+                  {/* الهاتف */}
+                  <div className="form-group">
+                    <label htmlFor="phone" style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '6px' }}>رقم الهاتف / واتساب <span className="required" style={{ color: 'var(--danger)' }}>*</span></label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="مثال: 01xxxxxxxxx"
+                      required
+                    />
                   </div>
                 </div>
               </div>
 
-              {/* ملاحظات إضافية */}
-              <div className="form-group full-width" style={{ marginTop: '1rem' }}>
-                <label htmlFor="notes">ملاحظات إضافية</label>
-                <textarea
-                  id="notes"
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleChange}
-                  placeholder="اكتب هنا أي تفاصيل أخرى ترغب في إعلامنا بها..."
-                  rows="3"
-                ></textarea>
+              {/* 2. خط السير */}
+              <div style={{ background: 'var(--surface-strong)', border: '1px solid var(--line)', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
+                <h4 style={{ color: 'var(--brand-strong)', margin: '0 0 16px 0', fontSize: '1rem', fontWeight: 'bold', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  🗺️ خط السير
+                </h4>
+                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                  {/* منطقة الاستلام */}
+                  <div className="form-group">
+                    <label htmlFor="pickupArea" style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '6px' }}>منطقة الاستلام <span className="required" style={{ color: 'var(--danger)' }}>*</span></label>
+                    <select
+                      id="pickupArea"
+                      name="pickupArea"
+                      value={formData.pickupArea}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">-- اختر منطقة الاستلام --</option>
+                      <option value="القاهرة">القاهرة</option>
+                      <option value="العبور">العبور</option>
+                      <option value="العاشر من رمضان">العاشر من رمضان</option>
+                      <option value="أخرى">منطقة أخرى</option>
+                    </select>
+                    {formData.pickupArea === 'أخرى' && (
+                      <input
+                        type="text"
+                        placeholder="اكتب منطقة الاستلام بالتفصيل"
+                        value={customPickupArea}
+                        onChange={(e) => setCustomPickupArea(e.target.value)}
+                        style={{ marginTop: '8px', width: '100%' }}
+                      />
+                    )}
+                  </div>
+
+                  {/* منطقة التسليم */}
+                  <div className="form-group">
+                    <label htmlFor="deliveryArea" style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '6px' }}>منطقة التسليم <span className="required" style={{ color: 'var(--danger)' }}>*</span></label>
+                    <select
+                      id="deliveryArea"
+                      name="deliveryArea"
+                      value={formData.deliveryArea}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">-- اختر منطقة التسليم --</option>
+                      <option value="القاهرة">القاهرة</option>
+                      <option value="العبور">العبور</option>
+                      <option value="العاشر من رمضان">العاشر من رمضان</option>
+                      <option value="أخرى">منطقة أخرى</option>
+                    </select>
+                    {formData.deliveryArea === 'أخرى' && (
+                      <input
+                        type="text"
+                        placeholder="اكتب منطقة التسليم بالتفصيل"
+                        value={customDeliveryArea}
+                        onChange={(e) => setCustomDeliveryArea(e.target.value)}
+                        style={{ marginTop: '8px', width: '100%' }}
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="form-submit">
+              {/* 3. تفاصيل الشحنة */}
+              <div style={{ background: 'var(--surface-strong)', border: '1px solid var(--line)', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
+                <h4 style={{ color: 'var(--brand-strong)', margin: '0 0 16px 0', fontSize: '1rem', fontWeight: 'bold', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  📦 تفاصيل الشحنة
+                </h4>
+                
+                {/* Chip selector for Shipment Type */}
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '8px' }}>نوع الشحنة <span className="required" style={{ color: 'var(--danger)' }}>*</span></label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {shipmentTypes.map((type) => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, shipmentType: type }));
+                          if (type !== 'أخرى') setCustomShipmentType('');
+                        }}
+                        style={{
+                          padding: '8px 14px',
+                          borderRadius: '20px',
+                          border: formData.shipmentType === type ? '2px solid var(--brand)' : '1px solid var(--line)',
+                          background: formData.shipmentType === type ? 'rgba(17, 61, 53, 0.08)' : 'var(--surface)',
+                          color: formData.shipmentType === type ? 'var(--brand-strong)' : 'var(--ink)',
+                          fontWeight: formData.shipmentType === type ? 'bold' : 'normal',
+                          cursor: 'pointer',
+                          transition: 'all 150ms ease',
+                          fontSize: '0.82rem'
+                        }}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                  {formData.shipmentType === 'أخرى' && (
+                    <input
+                      type="text"
+                      placeholder="اكتب نوع الشحنة بالتفصيل"
+                      value={customShipmentType}
+                      onChange={(e) => setCustomShipmentType(e.target.value)}
+                      style={{ marginTop: '10px', width: '100%' }}
+                    />
+                  )}
+                </div>
+
+                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '16px' }}>
+                  {/* عدد القطع */}
+                  <div className="form-group">
+                    <label htmlFor="piecesCount" style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '6px' }}>عدد القطع <span className="required" style={{ color: 'var(--danger)' }}>*</span></label>
+                    <input
+                      type="number"
+                      id="piecesCount"
+                      name="piecesCount"
+                      value={formData.piecesCount}
+                      onChange={handleChange}
+                      min="1"
+                      required
+                    />
+                  </div>
+
+                  {/* الأبعاد */}
+                  <div className="form-group">
+                    <label htmlFor="dimensions" style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '6px' }}>الأبعاد التقريبية (سم)</label>
+                    <input
+                      type="text"
+                      id="dimensions"
+                      name="dimensions"
+                      value={formData.dimensions}
+                      onChange={handleChange}
+                      placeholder="مثال: 50 × 30 × 20 سم"
+                    />
+                  </div>
+
+                  {/* الوزن */}
+                  <div className="form-group">
+                    <label htmlFor="estimatedWeight" style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '6px' }}>الوزن التقريبي</label>
+                    <input
+                      type="text"
+                      id="estimatedWeight"
+                      name="estimatedWeight"
+                      value={formData.estimatedWeight}
+                      onChange={handleChange}
+                      placeholder="مثال: 5 كيلو"
+                    />
+                  </div>
+
+                  {/* اليوم المطلوب للرحلة */}
+                  <div className="form-group">
+                    <label htmlFor="requestedTripDay" style={{ fontWeight: 600, fontSize: '0.88rem', display: 'block', marginBottom: '6px' }}>توقيت الرحلة المطلوب</label>
+                    <select
+                      id="requestedTripDay"
+                      name="requestedTripDay"
+                      value={formData.requestedTripDay}
+                      onChange={handleChange}
+                    >
+                      <option value="أقرب رحلة مناسبة">أقرب رحلة مناسبة</option>
+                      <option value="خلال 24 ساعة">خلال 24 ساعة</option>
+                      <option value="خلال 48 ساعة">خلال 48 ساعة</option>
+                      <option value="هذا الأسبوع">هذا الأسبوع</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Fragile & Special Loading Options */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '20px' }}>
+                  {/* هل قابلة للكسر؟ */}
+                  <div className="form-group" style={{ background: 'var(--surface)', border: '1px solid var(--line)', padding: '12px', borderRadius: '8px' }}>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.88rem', marginBottom: '2px' }}>هل الشحنة قابلة للكسر؟</label>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: 0, marginBottom: '10px' }}>
+                      سيتم مراعاة التعامل الحذر أثناء التسعير والتنظيم.
+                    </p>
+                    <div className="toggle-options" style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        type="button"
+                        className={`btn-toggle ${formData.isFragile === true ? 'active' : ''}`}
+                        onClick={() => handleSelectBoolean('isFragile', true)}
+                        style={{ flex: 1, minHeight: '34px', fontSize: '0.82rem' }}
+                      >
+                        نعم
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn-toggle ${formData.isFragile === false ? 'active' : ''}`}
+                        onClick={() => handleSelectBoolean('isFragile', false)}
+                        style={{ flex: 1, minHeight: '34px', fontSize: '0.82rem' }}
+                      >
+                        لا
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* هل تحتاج تحميل خاص؟ */}
+                  <div className="form-group" style={{ background: 'var(--surface)', border: '1px solid var(--line)', padding: '12px', borderRadius: '8px' }}>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.88rem', marginBottom: '2px' }}>هل تحتاج تحميل/تنزيل خاص؟</label>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: 0, marginBottom: '10px' }}>
+                      لو الشحنة كبيرة أو تحتاج شخصين للتحميل.
+                    </p>
+                    <div className="toggle-options" style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        type="button"
+                        className={`btn-toggle ${formData.needsSpecialLoading === true ? 'active' : ''}`}
+                        onClick={() => handleSelectBoolean('needsSpecialLoading', true)}
+                        style={{ flex: 1, minHeight: '34px', fontSize: '0.82rem' }}
+                      >
+                        نعم
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn-toggle ${formData.needsSpecialLoading === false ? 'active' : ''}`}
+                        onClick={() => handleSelectBoolean('needsSpecialLoading', false)}
+                        style={{ flex: 1, minHeight: '34px', fontSize: '0.82rem' }}
+                      >
+                        لا
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* 4. ملاحظات إضافية */}
+              <div style={{ background: 'var(--surface-strong)', border: '1px solid var(--line)', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
+                <h4 style={{ color: 'var(--brand-strong)', margin: '0 0 16px 0', fontSize: '1rem', fontWeight: 'bold', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  📝 ملاحظات إضافية
+                </h4>
+                <div className="form-group full-width" style={{ marginTop: '4px' }}>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleChange}
+                    placeholder="اكتب هنا أي تفاصيل أخرى ترغب في إعلامنا بها..."
+                    rows="3"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div className="form-submit" style={{ marginTop: '24px' }}>
                 <button
                   type="submit"
                   className="btn btn-primary"
                   disabled={loading}
+                  style={{ width: '100%', minHeight: '48px', fontSize: '1rem', fontWeight: 'bold' }}
                 >
                   {loading ? 'جاري تسجيل الطلب...' : 'سجّل بيانات الشحنة'}
                 </button>
