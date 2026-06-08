@@ -6,12 +6,14 @@ import PricingSection from './components/PricingSection.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
 import OrderIntakeDialog from './components/OrderIntakeDialog.jsx';
 import FAQSection from './components/FAQSection.jsx';
+import FAQPopup from './components/FAQPopup.jsx';
 import FinalCTA from './components/FinalCTA.jsx';
 import Footer from './components/Footer.jsx';
 import { whatsappLink } from './data/orderatData.js';
 
 function App() {
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
+  const [isFAQPopupOpen, setIsFAQPopupOpen] = useState(false);
 
   return (
     <>
@@ -32,6 +34,20 @@ function App() {
         onClose={() => setIsOrderDialogOpen(false)}
       />
 
+      <FAQPopup
+        isOpen={isFAQPopupOpen}
+        onClose={() => setIsFAQPopupOpen(false)}
+      />
+
+      {/* Sticky FAQ Hint Button */}
+      <button
+        onClick={() => setIsFAQPopupOpen(true)}
+        className="sticky-faq-btn"
+        type="button"
+      >
+        عندك سؤال؟ 💬
+      </button>
+
       {/* Mobile-only sticky WhatsApp CTA bar */}
       <div className="mobile-cta-bar" aria-label="حجز سريع عبر واتساب">
         <p>احجز شحنتك عبر واتساب</p>
@@ -44,6 +60,7 @@ function App() {
           احجز الآن
         </a>
       </div>
+
     </>
   );
 }
