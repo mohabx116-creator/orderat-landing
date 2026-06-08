@@ -4,6 +4,7 @@ import RoutesSection from './components/RoutesSection.jsx';
 import ScheduleSection from './components/ScheduleSection.jsx';
 import PricingSection from './components/PricingSection.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
+import OrderIntakeForm from './components/OrderIntakeForm.jsx';
 import ShipmentRules from './components/ShipmentRules.jsx';
 import FinalCTA from './components/FinalCTA.jsx';
 import Footer from './components/Footer.jsx';
@@ -19,6 +20,7 @@ function App() {
         <ScheduleSection />
         <PricingSection />
         <HowItWorks />
+        <OrderIntakeForm />
         <ShipmentRules />
         <FinalCTA />
       </main>
