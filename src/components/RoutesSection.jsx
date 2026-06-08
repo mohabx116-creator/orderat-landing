@@ -2,54 +2,36 @@ import { activeRoutes } from '../data/orderatData.js';
 
 function RoutesSection() {
   const coverageRoutes = [
-    { from: 'القاهرة', to: 'العبور', type: 'رحلات اتجاهين' },
-    { from: 'القاهرة', to: 'العاشر من رمضان', type: 'رحلات اتجاهين' },
-    { from: 'العبور', to: 'العاشر من رمضان', type: 'رحلات اتجاهين' },
+    { from: 'القاهرة', to: 'العبور' },
+    { from: 'القاهرة', to: 'العاشر من رمضان' },
+    { from: 'العبور', to: 'العاشر من رمضان' },
   ];
 
   return (
     <section className="section routes-section" aria-labelledby="routes-title">
       <div className="container">
         <div className="section-heading">
-          <p className="eyebrow">تغطية الخدمة ومسارات التوصيل</p>
-          <h2 id="routes-title">نخدم الشحنات الخفيفة بين المدن الرئيسية</h2>
-          <p style={{ maxWidth: '700px', margin: '0 auto 16px auto', fontSize: '1.1rem', color: 'var(--muted)' }}>
-            نخدم حاليًا الشحنات الخفيفة ومستلزمات الأعمال والطلبات التجارية بين القاهرة، العبور، والعاشر من رمضان.
+          <p className="eyebrow">تغطية الخدمة</p>
+          <h2 id="routes-title">نطاق التوصيل والخطوط النشطة</h2>
+          <p style={{ maxWidth: '600px', margin: '0 auto 24px auto', color: 'var(--muted)' }}>
+            نقدم خدمات شحن منتظمة تربط بين المدن الرئيسية التالية:
           </p>
-          <div className="notice-box-light" style={{ maxWidth: '650px', margin: '0 auto 24px auto', padding: '12px 16px', background: 'rgba(29, 117, 84, 0.05)', borderRadius: '8px', border: '1px solid rgba(29, 117, 84, 0.15)', fontSize: '0.9rem', color: 'var(--success)' }}>
-            ⚠️ <strong>فترة تشغيل تجريبي:</strong> الخدمة حاليًا في مرحلة إطلاق أولية لتنظيم حركة الشحنات، ويتم تأكيد إمكانية الاستلام والتسليم بدقة بعد تسجيل الطلب والتنسيق عبر واتساب.
-          </div>
         </div>
 
-        {/* Route Cards */}
-        <div className="routes-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+        {/* Compact Route Chips/Cards */}
+        <div className="routes-grid" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px', marginBottom: '24px' }}>
           {coverageRoutes.map((route, i) => (
-            <article className="area-card route-card" key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center', border: '1px solid var(--line)', borderRadius: '12px', background: 'var(--surface)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '8px', color: 'var(--brand)' }}>
-                <span>{route.from}</span>
-                <span style={{ color: 'var(--success)' }}>⇄</span>
-                <span>{route.to}</span>
-              </div>
-              <span className="status-badge" style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', background: 'rgba(29, 117, 84, 0.1)', color: 'var(--success)', fontWeight: 600 }}>
-                {route.type}
-              </span>
+            <article className="route-chip" key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 24px', borderRadius: '30px', border: '1px solid var(--line)', background: 'var(--surface-strong)', fontWeight: 600 }}>
+              <span style={{ color: 'var(--brand)' }}>{route.from}</span>
+              <span style={{ color: 'var(--accent)', fontSize: '1.1rem' }}>⇄</span>
+              <span style={{ color: 'var(--brand)' }}>{route.to}</span>
             </article>
           ))}
         </div>
 
-        {/* Regions list */}
-        <div className="section-heading" style={{ marginTop: '50px' }}>
-          <p className="eyebrow">المحطات الرئيسية النشطة</p>
-        </div>
-        <div className="routes-grid">
-          {activeRoutes.map((route) => (
-            <article className="area-card" key={route.name}>
-              <span className="area-dot" aria-hidden="true" />
-              <h3>{route.name}</h3>
-              <p>{route.description}</p>
-            </article>
-          ))}
-        </div>
+        <p style={{ textAlign: 'center', fontSize: '0.92rem', color: 'var(--muted)', maxWidth: '600px', margin: '0 auto' }}>
+          📍 نخدم حاليًا نطاق القاهرة، العبور، والعاشر من رمضان، ويتم تأكيد إمكانية الاستلام والتسليم بعد تسجيل الطلب مباشرة.
+        </p>
       </div>
     </section>
   );

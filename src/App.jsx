@@ -2,11 +2,9 @@ import { useState } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
 import RoutesSection from './components/RoutesSection.jsx';
-import ScheduleSection from './components/ScheduleSection.jsx';
 import PricingSection from './components/PricingSection.jsx';
 import HowItWorks from './components/HowItWorks.jsx';
 import OrderIntakeDialog from './components/OrderIntakeDialog.jsx';
-import ShipmentRules from './components/ShipmentRules.jsx';
 import FAQSection from './components/FAQSection.jsx';
 import FinalCTA from './components/FinalCTA.jsx';
 import Footer from './components/Footer.jsx';
@@ -20,11 +18,9 @@ function App() {
       <Navbar />
       <main>
         <Hero onOpenOrderDialog={() => setIsOrderDialogOpen(true)} />
-        <RoutesSection />
-        <ScheduleSection />
-        <PricingSection onOpenOrderDialog={() => setIsOrderDialogOpen(true)} />
         <HowItWorks />
-        <ShipmentRules />
+        <RoutesSection />
+        <PricingSection onOpenOrderDialog={() => setIsOrderDialogOpen(true)} />
         <FAQSection />
         <FinalCTA />
       </main>
