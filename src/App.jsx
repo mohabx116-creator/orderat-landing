@@ -12,6 +12,8 @@ import FinalCTA from './components/FinalCTA.jsx';
 import Footer from './components/Footer.jsx';
 import { whatsappLink } from './data/orderatData.js';
 
+import ShipmentGuidelinesSection from './components/ShipmentGuidelinesSection.jsx';
+
 function App() {
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
   const [isFAQPopupOpen, setIsFAQPopupOpen] = useState(false);
@@ -31,6 +33,7 @@ function App() {
         <HowItWorks />
         <RoutesSection />
         <PricingSection onOpenOrderDialog={() => setIsOrderDialogOpen(true)} />
+        <ShipmentGuidelinesSection onOpenOrderDialog={() => setIsOrderDialogOpen(true)} />
         <FAQSection />
         <FinalCTA />
       </main>
