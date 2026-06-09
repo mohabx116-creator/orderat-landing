@@ -24,6 +24,7 @@ function OrderIntakeForm({ onOpenTracking }) {
   const [success, setSuccess] = useState(null);
   const [submittedPhone, setSubmittedPhone] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
 
   // Custom free-text inputs for "Other" selections
   const [customPickupArea, setCustomPickupArea] = useState('');
@@ -62,7 +63,7 @@ function OrderIntakeForm({ onOpenTracking }) {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
@@ -115,9 +116,15 @@ function OrderIntakeForm({ onOpenTracking }) {
       }
     }
 
+    setIsReviewing(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    setError(null);
     setLoading(true);
 
     try {
+      const pieces = Number(formData.piecesCount);
       const payload = {
         ...formData,
         pickupArea: formData.pickupArea === 'أخرى' ? customPickupArea.trim() : formData.pickupArea,
@@ -139,6 +146,7 @@ function OrderIntakeForm({ onOpenTracking }) {
       setCustomPickupArea('');
       setCustomDeliveryArea('');
       setCustomShipmentType('');
+      setIsReviewing(false);
     } catch (err) {
       setError(err.message || 'تعذر تسجيل الطلب حاليًا. جرّب مرة أخرى أو تواصل معنا عبر واتساب.');
     } finally {
@@ -210,6 +218,119 @@ function OrderIntakeForm({ onOpenTracking }) {
                   style={{ width: '100%', minHeight: '44px', marginTop: '8px' }}
                 >
                   تسجيل شحنة جديدة 📦
+                </button>
+              </div>
+            </div>
+          ) : isReviewing ? (
+            <div className="review-step" style={{ direction: 'rtl', textAlign: 'right', padding: '10px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--brand-strong)', marginBottom: '6px' }}>راجع بيانات الشحنة</h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--muted)', marginTop: 0, marginBottom: '20px' }}>تأكد من صحة البيانات قبل إرسال الطلب.</p>
+
+              {error && (
+                <div className="alert alert-error" role="alert" style={{ marginBottom: '20px', padding: '12px 16px', fontSize: '0.9rem' }}>
+                  ⚠️ {error}
+                </div>
+              )}
+
+              <div style={{
+                background: 'var(--surface-strong)',
+                border: '1px solid var(--line)',
+                borderRadius: '10px',
+                padding: '16px',
+                marginBottom: '24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>الاسم بالكامل:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>{formData.customerName}</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>رقم الهاتف:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500, direction: 'ltr', textAlign: 'right' }}>{formData.phone}</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>منطقة الاستلام:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>
+                    {formData.pickupArea === 'أخرى' ? customPickupArea.trim() : formData.pickupArea}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>منطقة التسليم:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>
+                    {formData.deliveryArea === 'أخرى' ? customDeliveryArea.trim() : formData.deliveryArea}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>نوع الشحنة:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>
+                    {formData.shipmentType === 'أخرى' ? customShipmentType.trim() : formData.shipmentType}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>عدد القطع:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>{formData.piecesCount} قطعة</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>الوزن التقديري:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>{formData.estimatedWeight || 'غير محدد'}</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>الأبعاد التقريبية:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>{formData.dimensions || 'غير محدد'}</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>توقيت الرحلة:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>{formData.requestedTripDay}</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>قابلة للكسر:</span>
+                  <span style={{ color: formData.isFragile ? 'var(--danger)' : 'var(--ink)', fontSize: '0.9rem', fontWeight: 600 }}>
+                    {formData.isFragile ? 'نعم ⚠️' : 'لا'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>تحميل/تنزيل خاص:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500 }}>
+                    {formData.needsSpecialLoading ? 'نعم' : 'لا'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--muted)', fontSize: '0.88rem' }}>ملاحظات:</span>
+                  <span style={{ color: 'var(--ink)', fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'pre-wrap' }}>{formData.notes || 'لا توجد'}</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  disabled={loading}
+                  onClick={handleConfirmSubmit}
+                  style={{ flex: 2, minHeight: '48px', fontSize: '1rem', fontWeight: 'bold' }}
+                >
+                  {loading ? 'جاري إرسال الطلب...' : 'تأكيد وإرسال الطلب'}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  disabled={loading}
+                  onClick={() => setIsReviewing(false)}
+                  style={{ flex: 1, minHeight: '48px', fontSize: '1rem', fontWeight: 'bold' }}
+                >
+                  تعديل البيانات
                 </button>
               </div>
             </div>
