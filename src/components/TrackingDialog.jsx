@@ -238,6 +238,125 @@ function TrackingDialog({ isOpen, onClose, prefill }) {
                   </div>
                 </div>
 
+                {/* Visual Status Timeline */}
+                <div style={{
+                  marginTop: '20px',
+                  borderTop: '1px solid var(--line)',
+                  paddingTop: '16px',
+                  direction: 'rtl',
+                  textAlign: 'right'
+                }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '0.92rem', color: 'var(--brand-strong)', fontWeight: 'bold' }}>مسار الشحنة:</h4>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', paddingRight: '4px', marginBottom: '16px' }}>
+                    {/* Vertical Line */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '10px',
+                      bottom: '10px',
+                      right: '12px',
+                      width: '2px',
+                      background: 'var(--line)',
+                      zIndex: 0
+                    }} />
+
+                    {[
+                      { key: 'NEW', label: 'تم تسجيل الطلب' },
+                      { key: 'PRICED', label: 'تم تحديد السعر' },
+                      { key: 'CONFIRMED', label: 'تم تأكيد الطلب' },
+                      { key: 'PICKED_UP', label: 'تم استلام الشحنة' },
+                      { key: 'IN_TRANSIT', label: 'الشحنة في الطريق' },
+                      { key: 'DELIVERED', label: 'تم التسليم' }
+                    ].map((step, idx, arr) => {
+                      const isCancelled = order.status === 'CANCELLED';
+                      const currentStatusIndex = arr.findIndex(s => s.key === order.status);
+                      
+                      let isCompleted = false;
+                      let isActive = false;
+                      
+                      if (isCancelled) {
+                        isCompleted = step.key === 'NEW';
+                      } else {
+                        const stepIndex = idx;
+                        isCompleted = stepIndex < currentStatusIndex;
+                        isActive = step.key === order.status;
+                      }
+
+                      return (
+                        <div key={step.key} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          position: 'relative',
+                          zIndex: 1,
+                          marginBottom: idx === arr.length - 1 ? 0 : '12px'
+                        }}>
+                          {/* Dot */}
+                          <div style={{
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '50%',
+                            background: isCompleted ? 'var(--success)' : isActive ? 'var(--surface-strong)' : 'var(--bg)',
+                            border: `2px solid ${isCompleted ? 'var(--success)' : isActive ? 'var(--accent)' : 'var(--line)'}`,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginLeft: '12px',
+                            flexShrink: 0
+                          }}>
+                            {isCompleted && (
+                              <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.5 4L4 6.5L8.5 1.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            )}
+                            {isActive && (
+                              <div style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                background: 'var(--accent)'
+                              }} />
+                            )}
+                          </div>
+                          
+                          {/* Label */}
+                          <span style={{
+                            fontSize: '0.85rem',
+                            fontWeight: isActive ? '700' : 'normal',
+                            color: isActive ? 'var(--brand-strong)' : isCompleted ? 'var(--ink)' : 'var(--muted)'
+                          }}>
+                            {step.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Customer Status Note */}
+                  <div style={{
+                    padding: '12px 14px',
+                    borderRadius: '8px',
+                    background: order.status === 'CANCELLED' ? 'rgba(156, 62, 51, 0.08)' : 'rgba(17, 61, 53, 0.04)',
+                    borderRight: `3px solid ${order.status === 'CANCELLED' ? 'var(--danger)' : 'var(--brand)'}`,
+                    fontSize: '0.82rem',
+                    lineHeight: '1.6',
+                    color: 'var(--ink)',
+                    marginTop: '12px'
+                  }}>
+                    {order.status === 'CANCELLED' ? (
+                      <span style={{ fontWeight: 600, color: 'var(--danger)', display: 'block', marginBottom: '4px' }}>تم إلغاء الطلب 🚫</span>
+                    ) : null}
+                    <span>
+                      {order.status === 'NEW' && 'تم استلام طلبك، وسيتم مراجعته لتأكيد السعر وأقرب رحلة مناسبة.'}
+                      {order.status === 'PRICED' && 'تم تحديد السعر، وفي انتظار تأكيدك للمتابعة.'}
+                      {order.status === 'CONFIRMED' && 'تم تأكيد الطلب، وسيتم تنسيق الاستلام حسب أقرب رحلة مناسبة.'}
+                      {order.status === 'PICKED_UP' && 'تم استلام الشحنة وجاري تجهيزها للتحرك.'}
+                      {order.status === 'IN_TRANSIT' && 'الشحنة في الطريق إلى وجهتها.'}
+                      {order.status === 'DELIVERED' && 'تم تسليم الشحنة بنجاح.'}
+                      {order.status === 'CANCELLED' && 'تم إلغاء الطلب. يمكنك التواصل معنا عبر واتساب لأي استفسار.'}
+                    </span>
+                  </div>
+                </div>
+
                 <div style={{ marginTop: '16px', borderTop: '1px solid var(--line)', paddingTop: '12px', fontSize: '0.78rem', color: 'var(--muted)', display: 'flex', justifyContent: 'space-between' }}>
                   <span>يوم الرحلة المطلوب: {order.requestedTripDay || 'أي يوم'}</span>
                   <span>آخر تحديث: {new Date(order.updatedAt).toLocaleDateString('ar-EG', { hour: '2-digit', minute: '2-digit' })}</span>
